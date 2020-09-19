@@ -1,0 +1,17 @@
+venv
+
+.mypy_cache
+__pycache__/
+.ipynb_checkpoints
+*cache*
+
+*.pot
+*.pyc
+.py~
+.py.*
+
+.coverage
+.local
+
+.vscode
+.idea

@@ -23,8 +23,8 @@ class TestDangerous(unittest.TestCase):
                                      number_times=constants.NUMBER_OPERATIONS, username='user', product_name='product')
 
         with postgresql.create_session() as session:
-            balance = session.query(postgresql.UserModel)\
-                .filter(postgresql.UserModel.username == 'user').first().balance
+            balance = session.query(postgresql.UserModel).filter(
+                postgresql.UserModel.username == 'user').first().balance
 
         self.assertGreaterEqual(
             balance,

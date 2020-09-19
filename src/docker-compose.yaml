@@ -1,0 +1,36 @@
+version: "3.1"
+
+services:
+  postgresql:
+    image: postgres
+    restart: always
+
+    environment:
+      POSTGRES_USER: default
+      POSTGRES_DB: default
+      POSTGRES_PASSWORD: default
+
+    network_mode: host
+
+  mysql:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+
+    environment:
+      MYSQL_DATABASE: default
+      MYSQL_USER: default
+      MYSQL_PASSWORD: default
+      MYSQL_ROOT_PASSWORD: default
+
+    network_mode: host
+
+  mongodb:
+    image: mongo
+    restart: always
+
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: default
+      MONGO_INITDB_ROOT_PASSWORD: default
+
+    network_mode: host
