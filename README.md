@@ -85,7 +85,7 @@ From PostgreSQL's documentation:
 
 **As you can see, MySQL's "RR" behaves more like PostgreSQL's "Read Committed".** It's true that if your criteria is simple enough, You can do match and update in a single atomic update, Which should protect against double-spending. If your update criteria is more complex however, then you are still out of luck. Neither PostgreSQL's RC or MySQL's RR will eliminate the issue, In which case you will need a more strict isolation level, like "RR" in PostgreSQL or "Serializable". In a concurrent application, "Serializable" will cause constant deadlock, making too costly.
 
-It is also worth mentioning that you could update the user's balance atomically in a NoSQL datastore, You just need to do it properly. For instance in MongoDB you could do the following:
+It is also worth mentioning that you could update the user's balance atomically in a NoSQL datastore, You just need to do it properly. For instance in [MongoDB](https://www.mongodb.com/) you could do the following:
 
 ```python
 database.users.update_one(
@@ -103,9 +103,9 @@ database.users.update_one(
 
 **So do I need ACID after all?**    
 
-Yes, Because a non-durable database is not a "database" and a database that is perpetually inconsistent is unreliable. **NoSQL database are eventually consistant however**, meaning that they will eventually **converge on a consistent state**, and while most NoSQL database lack transactions, <span style="color:red">**It is your fault as a developer for using them in an application where transactions are required.**</span>
+Yes, Because a non-durable database is not a "database" and a database that is perpetually inconsistent is unreliable. **NoSQL database are eventually consistant (with some offering tunable consistency)**, meaning that they will eventually **converge on a consistent state**, and while most NoSQL database lack transactions, <span style="color:red">**It is your fault as a developer for using them in an application where transactions are required.**</span>
 
-ACID is not some silver bullet that will just fix poorly written software. Even with an ACID-compliant databases and default configuration, You are still susceptible to concurrency issues.
+ACID is not some silver bullet that will just fix poorly written software. Even with an ACID-compliant databases and default configuration, You are still susceptible to concurrency issues similar to the one the made Flexcoin go bankrupt.
 
 *Some parts of the banking infrastructure are actually eventually consistant and rely on compensating actions, This is done to ensure high-availability. [[source]](http://highscalability.com/blog/2013/5/1/myth-eric-brewer-on-why-banks-are-base-not-acid-availability.html)*
 
@@ -113,7 +113,8 @@ ACID is not some silver bullet that will just fix poorly written software. Even 
 
 1. Use a stricter isolation level like "Repeatable Reads", and make sure to use "SELECT FOR UPDATE" if you are usig MySQL.
 2. If your filtering criteria is simple enough, then just use one atomic instruction to match and update the balance e.g. `update users SET balance = balace - price WHERE balance >= price`.
-
+3. Few NoSQL databases actually provide tunable consistancy like [Cassandra](https://cassandra.apache.org/) and [MongoDB](https://www.mongodb.com/). Recently few started supporting transactions with ACID semantics as well, like [CockroachDB](https://www.cockroachlabs.com).
+ 
 ## Tests
 Tests for this post are located at [tests/](https://github.com/abdelrahman-t/death-by-acid/tree/master/src/tests).
 - tests/    
