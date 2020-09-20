@@ -21,7 +21,7 @@ Consider a situation where a customer buys a product from a store. A customer (c
 ## Implementation
 This seems simple enough, right?
 
-A typical solution in Java or Python would something like the following:
+A typical solution in Java or Python would be something like the following:
 
 Let's assume that you are using MySQL ([Most popular database](https://insights.stackoverflow.com/survey/2019) at the time of writing this post) for your application.
 
