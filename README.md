@@ -77,13 +77,18 @@ So what does "Repeatable Reads (RR)" mean after all?
 
 Apparently it means different things to different vendors, In MySQL's case, A normal SELECT (with "RR") is not a locking READ, A "SELECT FOR UPDATE" is required for database to honor "RR". In PosgreSQL however, "RR" works as you would expect.
 
+[**So what have Flexcoin survived the attack had they used MySQL? No, not with the default isolation level and typical ORM's implementations.**](#)
 ### 2. Read committed
 
 From PostgreSQL's documentation:
 
-"**Read Committed (RC) is the default isolation level in PostgreSQL**. When a transaction uses this isolation level, a SELECT query (without a FOR UPDATE/SHARE clause) sees only data committed before the query began; it never sees either uncommitted data or changes committed during query execution by concurrent transactions. In effect, a SELECT query sees a snapshot of the database as of the instant the query begins to run. However, SELECT does see the effects of previous updates executed within its own transaction, even though they are not yet committed. Also note that two successive SELECT commands can see different data, even though they are within a single transaction, if other transactions commit changes after the first SELECT starts and before the second SELECT starts. ..[REDACTED].. If the first updater commits, the second updater will ignore the row if the first updater deleted it, otherwise it will attempt to apply its operation to the updated version of the row. **The search condition of the command (the WHERE clause) is re-evaluated to see if the updated version of the row still matches the search condition**. If so, the second updater proceeds with its operation using the updated version of the row. In the case of SELECT FOR UPDATE and SELECT FOR SHARE, this means it is the updated version of the row that is locked and returned to the client."
+"**Read Committed is the default isolation level in PostgreSQL.** When a transaction uses this isolation level, a SELECT query (without a FOR UPDATE/SHARE clause) sees only data committed before the query began; it never sees either uncommitted data or changes committed during query execution by concurrent transactions. In effect, a SELECT query sees a snapshot of the database as of the instant the query begins to run. [REDACTED]"
 
-**As you can see, MySQL's "RR" behaves more like PostgreSQL's "Read Committed".** It's true that if your criteria is simple enough, You can do match and update in a single atomic update, Which should protect against double-spending. If your update criteria is more complex however, then you are still out of luck. Neither PostgreSQL's RC or MySQL's RR will eliminate the issue, In which case you will need a more strict isolation level, like "RR" in PostgreSQL or "Serializable". In a concurrent application, "Serializable" will cause constant deadlock, making too costly.
+In Read Committed, simultaneous transactions can concurrently modify user's balance, A transaction (T1) can check user's balance while some other transaction (T2) modify it. by the time T1 tries to update the balance, It will end up updating the value commited by T2 instead of the value it observed at the begining of the transaction.
+
+**As you can see, MySQL's RR behaves more like PostgreSQL's Read Committed.** It's true that if your criteria is simple enough, You can do match and update in a single atomic update, Which should protect against double-spending. If your update criteria is more complex however, then you are still out of luck. Neither PostgreSQL's RC or MySQL's RR will eliminate the issue, In which case you will need a more strict isolation level, like "RR" in PostgreSQL or Serializable. In a concurrent application, "Serializable" will cause deadlocks, making too costly.
+
+[**So what have Flexcoin survived the attack had they used PostgreSQL? No, not with the default isolation level and typical ORM's implementations.**](#)
 
 It is also worth mentioning that you could update the user's balance atomically in a NoSQL datastore, You just need to do it properly. For instance in [MongoDB](https://www.mongodb.com/) you could do the following:
 
@@ -103,17 +108,16 @@ database.users.update_one(
 
 **So do I need ACID after all?**    
 
-Yes, Because a non-durable database is not a "database" and a database that is perpetually inconsistent is unreliable. **NoSQL databases are eventually consistent (with some offering tunable consistency)**, meaning that they will eventually **converge on a consistent state**, and while most NoSQL database lack transactions, <span style="color:red">**It is your fault as a developer for using them in an application where transactions are required.**</span>
+Well, A non-durable database is not a "database" and a database that is perpetually inconsistent is unreliable, But that is not what you lose when you use a NoSQL database. NoSQL databases actually offer tunable consistency (like [Cassandra](https://cassandra.apache.org/)), and while most NoSQL databases lack transactions, [**It is your fault as a developer for using them in an application where transactions are required.**](#)
 
-## TL;DR
-ACID is not some silver bullet that will just fix poorly written software. Even with an ACID-compliant databases and default configuration, You are still susceptible to concurrency issues similar to the one the made Flexcoin go bankrupt.
+ACID is not some silver bullet that will just fix poorly written software. **Even with an ACID-compliant databases and default configuration, You are still susceptible to concurrency issues similar to the one the made Flexcoin go bankrupt.**
 
 *Some parts of the banking infrastructure are actually eventually consistent and rely on compensating actions, This is done to ensure high-availability. [[source]](http://highscalability.com/blog/2013/5/1/myth-eric-brewer-on-why-banks-are-base-not-acid-availability.html)*
 
 ## Workarounds
 
-1. Use a stricter isolation level like "Repeatable Reads", and make sure to use "SELECT FOR UPDATE" if you are usig MySQL.
-2. If your filtering criteria is simple enough, then just use one atomic instruction to match and update the balance e.g. `update users SET balance = balace - price WHERE balance >= price`.
+1. Use a stricter isolation level like Repeatable Reads, and make sure to use "SELECT FOR UPDATE" if you are usig MySQL.
+2. If your filtering criteria is simple enough, then just use one atomic instruction to match and update the balance e.g. `UPDATE users SET balance = balace - price WHERE balance >= price`.
 3. Few NoSQL databases actually provide tunable consistency like [Cassandra](https://cassandra.apache.org/) and [MongoDB](https://www.mongodb.com/). Recently few started supporting transactions with ACID semantics as well, like [CockroachDB](https://www.cockroachlabs.com).
  
 ## Tests
