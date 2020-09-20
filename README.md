@@ -1,6 +1,6 @@
 # Death by ACID
 
-Poorly written transactions and confusing isolation levels.
+A tale of poorly written transactions and confusing isolation levels.
 
 <img src="assets/the-vat-of-acid.jpg" alt="drawing" style="width:500px;"/>
 <br>
@@ -75,7 +75,7 @@ I will refrain from discussing 1 and 4, because they are not used as the default
 
 So what does "Repeatable Reads (RR)" mean after all?
 
-Apparently it means different things to different vendors, In MySQL's case, A normal SELECT (with "RR") is not a locking READ, A "SELECT FOR UPDATE" is required for database to honour "RR". In PosgreSQL however, "RR" works as you would expect.
+Apparently it means different things to different vendors, In MySQL's case, A normal SELECT (with "RR") is not a locking READ, A "SELECT FOR UPDATE" is required for database to honor "RR". In PosgreSQL however, "RR" works as you would expect.
 
 ### 2. Read committed
 
@@ -103,7 +103,7 @@ database.users.update_one(
 
 **So do I need ACID after all?**    
 
-Yes, Because a non-durable database is not a "database" and a database that is perpetually inconsistent is unreliable. **NoSQL database are eventually consistent (with some offering tunable consistency)**, meaning that they will eventually **converge on a consistent state**, and while most NoSQL database lack transactions, <span style="color:red">**It is your fault as a developer for using them in an application where transactions are required.**</span>
+Yes, Because a non-durable database is not a "database" and a database that is perpetually inconsistent is unreliable. **NoSQL databases are eventually consistent (with some offering tunable consistency)**, meaning that they will eventually **converge on a consistent state**, and while most NoSQL database lack transactions, <span style="color:red">**It is your fault as a developer for using them in an application where transactions are required.**</span>
 
 ## TL;DR
 ACID is not some silver bullet that will just fix poorly written software. Even with an ACID-compliant databases and default configuration, You are still susceptible to concurrency issues similar to the one the made Flexcoin go bankrupt.
