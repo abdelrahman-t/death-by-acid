@@ -105,6 +105,7 @@ database.users.update_one(
 
 Yes, Because a non-durable database is not a "database" and a database that is perpetually inconsistent is unreliable. **NoSQL database are eventually consistent (with some offering tunable consistency)**, meaning that they will eventually **converge on a consistent state**, and while most NoSQL database lack transactions, <span style="color:red">**It is your fault as a developer for using them in an application where transactions are required.**</span>
 
+## TL;DR
 ACID is not some silver bullet that will just fix poorly written software. Even with an ACID-compliant databases and default configuration, You are still susceptible to concurrency issues similar to the one the made Flexcoin go bankrupt.
 
 *Some parts of the banking infrastructure are actually eventually consistent and rely on compensating actions, This is done to ensure high-availability. [[source]](http://highscalability.com/blog/2013/5/1/myth-eric-brewer-on-why-banks-are-base-not-acid-availability.html)*
