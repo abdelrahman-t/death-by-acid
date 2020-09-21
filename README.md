@@ -1,6 +1,6 @@
 # Death by ACID
 
-A tale of poorly written transactions and confusing isolation levels.
+A tale about poorly written transactions and confusing database isolation levels.
 
 <img src="assets/the-vat-of-acid.jpg" alt="drawing" style="width:500px;"/>
 <br>
@@ -9,7 +9,7 @@ For this post to make sense, one needs to go back to 2014, where two bitcoin exc
 
 "The attacker successfully exploited a flaw in the code which allows transfers between Flexcoin users. By sending thousands of simultaneous requests, the attacker was able to "move" coins from one user account to another until the sending account was overdrawn, before balances were updated."
 
-So was the use of *NoSQL* really the issue and was ACID the solution?
+So was the use of *NoSQL* really the issue and was ACID the solution 🤭?
 
 ## Synopsis
 
@@ -61,7 +61,7 @@ But, What does "Repeatable Reads (RR)" mean with respect to a transaction anyway
 
 Well, It's exactly as it sounds, It's simply that If you do multiple reads within a transaction, the transction will always see the same snapshot of the concerned rows, any transaction that tries to modify the same rows will have to wait for the running transaction to finish.
 
-Consider a situation where a user creates two simultaneous transactions (T1, T2) where he buys two separate items, The two transactions will first check if the user balance (B) cover's the item's price, To honor RR however, the two transactions can't both update user balance at the same time, since you can't have repeatable reads if the underlying values change by concurrent transactions. In other words, If T1 manages to update user's balance after T2 has started, T2 should fail to proceed as user's balance has changed since the beginning of the transaction. In a world that makes sense, that would be true, MySQL however, disagrees and will happily let both T1 and T2 update B simultaneously under "RR".
+Consider a situation where a user creates two simultaneous transactions (T1, T2) where he buys two separate items, The two transactions will first check if the user balance (B) cover's the item's price, To honor RR however, the two transactions can't both update user balance at the same time, since you can't have repeatable reads if the underlying values change by concurrent transactions. In other words, If T1 manages to update user's balance after T2 has started, T2 should fail to proceed as user's balance has changed since the beginning of the transaction. In a world that makes sense, that would be true, MySQL however, disagrees and will happily let T1 and T2 update B simultaneously under "RR".
 
 ## DBMS mumbo jumbo
 
