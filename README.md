@@ -86,7 +86,7 @@ From PostgreSQL's documentation:
 
 In Read Committed, simultaneous transactions can concurrently modify user's balance, A transaction (T1) can check user's balance while some other transaction (T2) modify it. by the time T1 tries to update the balance, It will end up updating the value commited by T2 instead of the value it observed at the begining of the transaction.
 
-**As you can see, MySQL's RR behaves more like PostgreSQL's Read Committed.** It's true that if your criteria is simple enough, You can do match and update in a single atomic update, Which should protect against double-spending. If your update criteria is more complex however, then you are still out of luck. Neither PostgreSQL's RC or MySQL's RR will eliminate the issue, In which case you will need a more strict isolation level, like "RR" in PostgreSQL or Serializable. In a concurrent application, "Serializable" will cause deadlocks, making too costly.
+**As you can see, MySQL's RR behaves more like PostgreSQL's Read Committed.** It's true that if your criteria is simple enough, You can do match and update in a single atomic update, Which should protect against double-spending. If your update criteria is more complex however, then you are still out of luck. Neither PostgreSQL's RC or MySQL's RR will eliminate the issue, In which case you will need a more strict isolation level, like "RR" in PostgreSQL or Serializable. In a concurrent application however "Serializable" is more likely to cause deadlocks making it too costly.
 
 [**So what have Flexcoin survived the attack had they used PostgreSQL? No, not with the default isolation level and typical ORM's implementations.**](#)
 
